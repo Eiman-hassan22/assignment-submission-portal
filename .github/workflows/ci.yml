@@ -1,3 +1,4 @@
+```yaml
 name: Assignment Portal CI
 
 on:
@@ -47,17 +48,16 @@ jobs:
   deploy:
     needs: test-and-report
     if: success()
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
 
       - name: Create Pages website
-        shell: powershell
         run: |
-          New-Item -ItemType Directory -Force -Path public
-          @"
+          mkdir -p public
+          cat > public/index.html <<'EOF'
           <!DOCTYPE html>
           <html>
           <head>
@@ -89,7 +89,7 @@ jobs:
             </div>
           </body>
           </html>
-          "@ | Out-File -FilePath public/index.html -Encoding utf8
+          EOF
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
