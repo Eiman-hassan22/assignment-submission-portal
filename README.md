@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Assignment Submission Portal
 
 A small Flask portal with required-field and URL validation, pytest automated tests, a GitHub Actions CI pipeline, and a localhost JSON report receiver.
@@ -70,3 +71,6 @@ git push
 3. Restore the correct validation, push again, and show all tests passing.
 
 The local report file is `test-report.json`. It contains repository, branch, commit, run ID, timestamp, individual test results, counts, and overall status when executed in GitHub Actions.
+=======
+# assignment-submission-portal
+>>>>>>> a8a37aea9f36dbe8f3f54df388cb9a1e3ee741cb
