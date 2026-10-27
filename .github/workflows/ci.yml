@@ -7,6 +7,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   test-and-report:
     runs-on: self-hosted
@@ -38,3 +43,59 @@ jobs:
         run: |
           echo "Automated tests failed. See the test results above."
           exit 1
+
+  deploy:
+    needs: test-and-report
+    if: success()
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Create Pages website
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path public
+          @"
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Assignment Submission Portal</title>
+            <style>
+              body {
+                font-family: Arial;
+                max-width: 800px;
+                margin: 60px auto;
+                padding: 20px;
+                text-align: center;
+              }
+              h1 {
+                color: #1457a6;
+              }
+              .box {
+                padding: 25px;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="box">
+              <h1>Assignment Submission Portal</h1>
+              <p>Deployment successful.</p>
+              <p>All automated tests passed.</p>
+              <p>Deployed through GitHub Actions.</p>
+            </div>
+          </body>
+          </html>
+          "@ | Out-File -FilePath public/index.html -Encoding utf8
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
