@@ -1,76 +1,145 @@
-<<<<<<< HEAD
 # Assignment Submission Portal
 
-A small Flask portal with required-field and URL validation, pytest automated tests, a GitHub Actions CI pipeline, and a localhost JSON report receiver.
+## Project Description
 
-## Requirements
-- Python 3.10 or newer
-- Git
-- GitHub account
-- For remote CI report delivery: a tunnel such as ngrok and its authentication token
+This project is an Assignment Submission Portal developed for the DevOps lab midterm. It allows students to submit their assignment details through a web application. The student provides their name, registration number, assignment title, and submission URL.
 
-## Run the portal
+The application validates the required fields and checks that the submission URL is a valid HTTP or HTTPS URL. Valid submissions are saved and displayed on the portal.
+
+## Project Technologies
+
+- Python
+- Flask
+- Pytest
+- GitHub Actions
+- GitHub
+- Self-hosted GitHub Actions Runner
+
+## Project Structure
+
+```text
+assignment-submission-portal/
+│
+├── app.py
+├── receiver.py
+├── make_report.py
+├── requirements.txt
+├── pytest.ini
+├── test-report.json
+├── README.md
+│
+├── tests/
+│   └── test_app.py
+│
+└── .github/
+    └── workflows/
+        └── ci.yml
+```
+
+## How to Run the Application
+
+First install the required packages:
+
 ```bash
-python -m venv .venv
-# Windows Command Prompt:
-.venv\Scripts\activate
-# Windows PowerShell:
-# .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+```
+
+Then start the Flask application:
+
+```bash
 python app.py
 ```
-Open http://127.0.0.1:5000.
 
-## Run tests locally
-```bash
-python -m pytest -v --json-report --json-report-file=pytest-report.json
-python make_report.py
+The application runs locally on:
+
+```text
+http://127.0.0.1:5000
 ```
 
-## Start the local report receiver
-In a second terminal, activate the environment and run:
+Open this address in a web browser to use the Assignment Submission Portal.
+
+## How to Run Automated Tests
+
+The project contains three automated tests.
+
+Run all tests using:
+
+```bash
+python -m pytest -v
+```
+
+The tests check:
+
+1. Complete assignment details with a valid URL are accepted and saved.
+2. A missing registration number is rejected.
+3. An invalid submission URL is rejected and not saved.
+
+## Continuous Integration
+
+GitHub Actions is used for continuous integration.
+
+Whenever code is pushed to the `main` branch, the workflow automatically:
+
+1. Checks out the project.
+2. Installs the required dependencies.
+3. Runs the automated tests.
+4. Generates the test report.
+5. Sends the report to the local HTTP receiver.
+6. Fails the pipeline if any automated test fails.
+
+The project uses a self-hosted GitHub Actions runner because the local report receiver needs to be accessible during the pipeline.
+
+## Local Report Receiver
+
+The local HTTP receiver is implemented in `receiver.py`.
+
+Start the receiver using:
+
 ```bash
 python receiver.py
 ```
-The receiver listens on port 8000 and saves received reports to `test-report.json` in the project directory.
 
-## Connect GitHub Actions to the local receiver
-A GitHub-hosted runner cannot access your computer's `localhost` directly. Keep `python receiver.py` running and start a secure tunnel to port 8000, for example with ngrok:
-```bash
-ngrok http 8000
-```
-Copy the HTTPS forwarding URL from ngrok. In GitHub, open the repository's **Settings → Secrets and variables → Actions → New repository secret**. Name it `REPORT_RECEIVER_URL` and set its value to the HTTPS forwarding URL (for example `https://your-assigned-domain.ngrok-free.app`, without `/report`). Do not commit tunnel credentials or secrets.
+The receiver listens on:
 
-Keep the receiver and tunnel running during each push/demo. The receiver overwrites `test-report.json` with the latest received report. The CI job attempts to send the report after both passing and failing test runs.
-
-## Push to GitHub
-Create an empty GitHub repository, then run these commands from this project directory:
-```bash
-git init
-git add .
-git commit -m "Create assignment portal and automated tests"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-git push -u origin main
-```
-Replace the remote URL with your actual repository URL. Future updates:
-```bash
-git add .
-git commit -m "Update assignment portal"
-git push
+```text
+http://127.0.0.1:8000
 ```
 
-## Required tests
-1. Complete valid submission is saved and displayed.
-2. Missing registration number is rejected with a validation message.
-3. Invalid URL is rejected and not saved.
+The test report is sent automatically to the receiver after the tests execute.
 
-## Demonstration
-1. Push the correct version and show all tests passing.
-2. Temporarily introduce a defect in URL validation, push it, and show the CI test failure and received JSON report.
-3. Restore the correct validation, push again, and show all tests passing.
+The receiver saves the report as:
 
-The local report file is `test-report.json`. It contains repository, branch, commit, run ID, timestamp, individual test results, counts, and overall status when executed in GitHub Actions.
-=======
-# assignment-submission-portal
->>>>>>> a8a37aea9f36dbe8f3f54df388cb9a1e3ee741cb
+```text
+test-report.json
+```
+
+## Test Report
+
+The generated `test-report.json` contains:
+
+- Repository name
+- Branch name
+- Commit SHA
+- Pipeline run ID
+- Execution timestamp
+- Individual test names
+- Test results
+- Failure messages
+- Total tests
+- Passed tests
+- Failed tests
+- Overall status
+
+Both successful and failed pipeline runs are automatically reported.
+
+## CI Failure Demonstration
+
+A defect was intentionally introduced into the application to demonstrate CI failure handling.
+
+The automated tests detected the defect, the GitHub Actions pipeline failed, and the local `test-report.json` was automatically updated with the failed test results.
+
+After fixing the defect, the tests passed again and the GitHub Actions pipeline returned to a successful state.
+
+## Conclusion
+
+The project demonstrates an automated DevOps workflow where application testing is integrated with GitHub Actions. Every push can be automatically tested, and the results are automatically sent to a local report receiver and stored as a JSON report.
