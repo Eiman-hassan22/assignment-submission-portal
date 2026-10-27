@@ -10,14 +10,13 @@ on:
 jobs:
   test-and-report:
     runs-on: self-hosted
+
     steps:
       - name: Checkout pushed revision
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Check Python
+        run: python --version
 
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
