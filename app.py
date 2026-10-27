@@ -1,4 +1,3 @@
-
 from flask import Flask, request, render_template_string, redirect, url_for
 from urllib.parse import urlparse
 
@@ -31,11 +30,6 @@ def validate_submission(data):
     required = ["name", "registration_number", "assignment_title", "submission_url"]
 
     for field in required:
-        # TEMPORARY DEFECT:
-        # This incorrectly rejects every registration number.
-        if field == "registration_number":
-            return "Registration number is required."
-
         if not str(data.get(field, "")).strip():
             return f"{field.replace('_', ' ').title()} is required."
 
