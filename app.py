@@ -1,3 +1,4 @@
+
 from flask import Flask, request, render_template_string, redirect, url_for
 from urllib.parse import urlparse
 
@@ -28,28 +29,69 @@ td,th{border:1px solid #ddd;padding:9px;text-align:left}</style></head><body>
 
 def validate_submission(data):
     required = ["name", "registration_number", "assignment_title", "submission_url"]
+
     for field in required:
+        # TEMPORARY DEFECT:
+        # This incorrectly rejects every registration number.
+        if field == "registration_number":
+            return "Registration number is required."
+
         if not str(data.get(field, "")).strip():
             return f"{field.replace('_', ' ').title()} is required."
+
     parsed = urlparse(str(data["submission_url"]).strip())
+
     if parsed.scheme not in ("http", "https") or not parsed.netloc or "." not in parsed.netloc:
         return "Please enter a valid HTTP or HTTPS submission URL."
+
     return None
+
 
 @app.get("/")
 def home():
-    return render_template_string(PAGE, submissions=submissions, message=None, error=False)
+    return render_template_string(
+        PAGE,
+        submissions=submissions,
+        message=None,
+        error=False
+    )
+
 
 @app.post("/submit")
 def submit():
-    data = {key: request.form.get(key, "").strip() for key in
-            ["name", "registration_number", "assignment_title", "submission_url"]}
+    data = {
+        key: request.form.get(key, "").strip()
+        for key in [
+            "name",
+            "registration_number",
+            "assignment_title",
+            "submission_url"
+        ]
+    }
+
     error = validate_submission(data)
+
     if error:
-        return render_template_string(PAGE, submissions=submissions, message=error, error=True), 400
+        return render_template_string(
+            PAGE,
+            submissions=submissions,
+            message=error,
+            error=True
+        ), 400
+
     submissions.append(data)
-    return render_template_string(PAGE, submissions=submissions,
-                                  message="Assignment submitted successfully.", error=False), 200
+
+    return render_template_string(
+        PAGE,
+        submissions=submissions,
+        message="Assignment submitted successfully.",
+        error=False
+    ), 200
+
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(
+        host="127.0.0.1",
+        port=5000,
+        debug=False
+    )
