@@ -1,0 +1,31 @@
+{
+  "repository": "local-run",
+  "branch": "local",
+  "commit_sha": "local",
+  "pipeline_run_id": "local",
+  "execution_timestamp": "2026-10-27T06:23:01.404791+00:00",
+  "tests": [
+    {
+      "name": "tests/test_app.py::test_complete_details_and_valid_url_are_saved",
+      "result": "PASSED",
+      "failure_message": null
+    },
+    {
+      "name": "tests/test_app.py::test_missing_registration_number_is_rejected",
+      "result": "PASSED",
+      "failure_message": null
+    },
+    {
+      "name": "tests/test_app.py::test_invalid_submission_url_is_rejected_and_not_saved",
+      "result": "PASSED",
+      "failure_message": null
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "status": "PASSED"
+  }
+}

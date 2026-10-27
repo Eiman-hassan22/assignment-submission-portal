@@ -1,0 +1,41 @@
+name: Assignment Portal CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-and-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pushed revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run automated tests
+        id: tests
+        continue-on-error: true
+        run: python -m pytest -v --json-report --json-report-file=pytest-report.json
+
+      - name: Build and send actual test report (even when tests fail)
+        if: always()
+        env:
+          REPORT_RECEIVER_URL: ${{ secrets.REPORT_RECEIVER_URL }}
+        run: |
+          python make_report.py
+
+      - name: Fail pipeline if tests failed
+        if: steps.tests.outcome == 'failure'
+        run: |
+          echo "Automated tests failed. See the test results above."
+          exit 1
