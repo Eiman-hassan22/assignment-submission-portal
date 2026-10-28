@@ -1,3 +1,4 @@
+
 name: Assignment Portal CI
 
 on: [push, pull_request, workflow_dispatch]
@@ -35,8 +36,8 @@ jobs:
       - name: Email test report
         if: always()
         env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
         run: python send_email.py
 
       - name: Fail if tests failed

@@ -1,23 +1,35 @@
 
 import os
 import json
-import urllib.request
-import urllib.error
-# Get secrets from GitHub Actions
-api_key = os.environ["RESEND_API_KEY"]
-to_email = os.environ["EMAIL_TO"]
-# Read the generated test report
+import smtplib
+from email.message import EmailMessage
+
+
+# Get Gmail credentials from GitHub Secrets
+email_address = os.environ["EMAIL_ADDRESS"]
+app_password = os.environ["EMAIL_APP_PASSWORD"]
+
+
+# Read the test report
 with open("test-report.json", "r", encoding="utf-8") as f:
     report = json.load(f)
-# Get report summary
+
+
+# Get report information
 status = report["summary"]["status"]
 passed = report["summary"]["passed"]
 failed = report["summary"]["failed"]
 total = report["summary"]["total"]
-# Email subject
-subject = f"Assignment Portal Test Report - {status}"
-# Email body
-body = f"""
+
+
+# Create email
+msg = EmailMessage()
+
+msg["Subject"] = f"Assignment Portal Test Report - {status}"
+msg["From"] = email_address
+msg["To"] = email_address
+
+msg.set_content(f"""
 Assignment Submission Portal - Automated Test Report
 
 Repository: {report["repository"]}
@@ -33,45 +45,17 @@ Failed: {failed}
 
 Detailed Results:
 {json.dumps(report["tests"], indent=2)}
-"""
+""")
 
 
-# Prepare email data
-data = json.dumps({
-    "from": "Assignment Portal <onboarding@resend.dev>",
-    "to": [to_email],
-    "subject": subject,
-    "text": body
-}).encode("utf-8")
-
-
-# Create Resend API request
-request = urllib.request.Request(
-    "https://api.resend.com/emails",
-    data=data,
-    headers={
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    },
-    method="POST"
-)
-
-
-# Send email
+# Connect to Gmail SMTP
 try:
-    with urllib.request.urlopen(request) as response:
-        print("Email sent successfully.")
-        print(response.read().decode())
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()
+        server.login(email_address, app_password)
+        server.send_message(msg)
 
-except urllib.error.HTTPError as e:
-    print("====================================")
-    print("RESEND EMAIL ERROR")
-    print("====================================")
-    print("HTTP Status:", e.code)
-    print("Error Details:")
-    print(e.read().decode())
-    print("====================================")
-    raise
+    print("Email sent successfully!")
 
 except Exception as e:
     print("Email sending failed:")
