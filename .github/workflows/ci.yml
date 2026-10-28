@@ -1,14 +1,6 @@
-```yaml
 name: Assignment Portal CI
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+on: [push, pull_request, workflow_dispatch]
 
 permissions:
   contents: read
@@ -64,14 +56,11 @@ jobs:
         run: |
           mkdir -p public
           echo '<!DOCTYPE html>' > public/index.html
-          echo '<html>' >> public/index.html
-          echo '<head><title>Assignment Submission Portal</title></head>' >> public/index.html
-          echo '<body>' >> public/index.html
-          echo '<h1>Assignment Submission Portal</h1>' >> public/index.html
+          echo '<html><head><title>Assignment Submission Portal</title></head>' >> public/index.html
+          echo '<body><h1>Assignment Submission Portal</h1>' >> public/index.html
           echo '<p>Deployment successful.</p>' >> public/index.html
           echo '<p>All automated tests passed.</p>' >> public/index.html
-          echo '</body>' >> public/index.html
-          echo '</html>' >> public/index.html
+          echo '</body></html>' >> public/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
