@@ -32,17 +32,16 @@ jobs:
         continue-on-error: true
         run: python -m pytest -v --json-report --json-report-file=pytest-report.json
 
-      - name: Build and send actual test report (even when tests fail)
+      - name: Build and send actual test report
         if: always()
         env:
           REPORT_RECEIVER_URL: ${{ secrets.REPORT_RECEIVER_URL }}
-        run: |
-          python make_report.py
+        run: python make_report.py
 
       - name: Fail pipeline if tests failed
         if: steps.tests.outcome == 'failure'
         run: |
-          echo "Automated tests failed. See the test results above."
+          echo "Automated tests failed."
           exit 1
 
   deploy:
@@ -57,39 +56,16 @@ jobs:
       - name: Create Pages website
         run: |
           mkdir -p public
-          cat > public/index.html <<'EOF'
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>Assignment Submission Portal</title>
-            <style>
-              body {
-                font-family: Arial;
-                max-width: 800px;
-                margin: 60px auto;
-                padding: 20px;
-                text-align: center;
-              }
-              h1 {
-                color: #1457a6;
-              }
-              .box {
-                padding: 25px;
-                border: 1px solid #ddd;
-                border-radius: 10px;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="box">
-              <h1>Assignment Submission Portal</h1>
-              <p>Deployment successful.</p>
-              <p>All automated tests passed.</p>
-              <p>Deployed through GitHub Actions.</p>
-            </div>
-          </body>
-          </html>
-          EOF
+          echo '<!DOCTYPE html>' > public/index.html
+          echo '<html>' >> public/index.html
+          echo '<head><title>Assignment Submission Portal</title></head>' >> public/index.html
+          echo '<body>' >> public/index.html
+          echo '<h1>Assignment Submission Portal</h1>' >> public/index.html
+          echo '<p>Deployment successful.</p>' >> public/index.html
+          echo '<p>All automated tests passed.</p>' >> public/index.html
+          echo '<p>Deployed through GitHub Actions.</p>' >> public/index.html
+          echo '</body>' >> public/index.html
+          echo '</html>' >> public/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
