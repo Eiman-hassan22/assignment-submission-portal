@@ -1,3 +1,4 @@
+```yaml
 name: Assignment Portal CI
 
 on:
@@ -38,6 +39,13 @@ jobs:
         env:
           REPORT_RECEIVER_URL: ${{ secrets.REPORT_RECEIVER_URL }}
         run: python make_report.py
+
+      - name: Email test report
+        if: always()
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: python send_email.py
 
       - name: Fail if tests failed
         if: steps.tests.outcome == 'failure'
