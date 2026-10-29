@@ -1,7 +1,13 @@
-
 name: Assignment Portal CI
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -9,10 +15,12 @@ permissions:
   id-token: write
 
 jobs:
+
   test-and-report:
     runs-on: self-hosted
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -44,12 +52,14 @@ jobs:
         if: steps.tests.outcome == 'failure'
         run: exit 1
 
+
   deploy:
     needs: test-and-report
     if: success()
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -57,11 +67,14 @@ jobs:
         run: |
           mkdir -p public
           echo '<!DOCTYPE html>' > public/index.html
-          echo '<html><head><title>Assignment Submission Portal</title></head>' >> public/index.html
-          echo '<body><h1>Assignment Submission Portal</h1>' >> public/index.html
+          echo '<html>' >> public/index.html
+          echo '<head><title>Assignment Submission Portal</title></head>' >> public/index.html
+          echo '<body>' >> public/index.html
+          echo '<h1>Assignment Submission Portal</h1>' >> public/index.html
           echo '<p>Deployment successful.</p>' >> public/index.html
           echo '<p>All automated tests passed.</p>' >> public/index.html
-          echo '</body></html>' >> public/index.html
+          echo '</body>' >> public/index.html
+          echo '</html>' >> public/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
