@@ -101,16 +101,17 @@ PAGE = """
 
     {% for s in submissions %}
     <tr>
-        <td>{{ s.name }}</td>
-        <td>{{ s.registration_number }}</td>
-        <td>{{ s.assignment_title }}</td>
+        <td>{{s.name}}</td>
+        <td>{{s.registration_number}}</td>
+        <td>{{s.assignment_title}}</td>
         <td>
-            <a href="{{ s.submission_url }}">
-                {{ s.submission_url }}
+            <a href="{{s.submission_url}}">
+                {{s.submission_url}}
             </a>
         </td>
     </tr>
     {% endfor %}
+
 </table>
 
 {% else %}
@@ -136,6 +137,7 @@ def validate_submission(data):
     for field in required:
 
         if not str(data.get(field, "")).strip():
+
             return f"{field.replace('_', ' ').title()} is required."
 
     parsed = urlparse(
@@ -147,6 +149,7 @@ def validate_submission(data):
         or not parsed.netloc
         or "." not in parsed.netloc
     ):
+
         return "Please enter a valid HTTP or HTTPS submission URL."
 
     return None
@@ -194,7 +197,7 @@ def submit():
         submissions=submissions,
         message="Assignment submitted successfully.",
         error=False
-    ), 200
+    ), 200   
 
 
 if __name__ == "__main__":
